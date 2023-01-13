@@ -24,7 +24,7 @@ var submitTime time.Duration = 1 * 60
 
 func main() {
 	msg := make(chan *big.Int)
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 20; i++ {
 		go generateAccountJob(msg)
 	}
 	totalStr := readFile(totalFile)
@@ -45,11 +45,11 @@ func main() {
 				log.Println(err)
 			}
 			text := fmt.Sprintf(""+
-				"[ETH collision whitelist version]\n"+
-				"Data: %d\n"+
+				"[ETH Collision Match Address]\n"+
+				"Data : %d\n"+
 				"Total: %d\n"+
-				"Speed: %d/h\n"+
-				"Addresses: %d\n",
+				"Speed: %d\n"+
+				"Addrs: %d\n",
 				len(data), total, speed, addresses)
 			appendFile(speedFile, text)
 			sendMsgText(text)
