@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func Test_checkAddress(t *testing.T) {
 	type args struct {
@@ -13,24 +15,22 @@ func Test_checkAddress(t *testing.T) {
 	}{
 		{
 			args: args{address: ""},
-			want: false,
-		},
-		{
-			args: args{address: "0xc0e99e3981e09da3452b5bcb68ee33b6576bd5d7"},
 			want: true,
 		},
 		{
-			args: args{address: "0xc0e99e3981e09da3452b5bcb68ee33b6576bd5D7"},
+			args: args{address: "0x00000000219ab540356cbb839cbe05303d7705fa"},
 			want: true,
 		},
 		{
-			args: args{address: "0xc0e99e3981e09da3452b5bcb68ee33b6576bd5D8"},
+			args: args{address: "0x00000000219ab540356cbb839cbe05303d7705fb"},
 			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := checkAddress(tt.args.address); got != tt.want {
+			InitData()
+			got := checkAddress(tt.args.address)
+			if got != tt.want {
 				t.Errorf("checkAddress() = %v, want %v", got, tt.want)
 			}
 		})

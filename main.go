@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 )
@@ -16,7 +17,6 @@ var accountsFile = "accounts.txt"
 var speedFile = "speed.txt"
 
 var locker = sync.Mutex{}
-var rwLocker = sync.RWMutex{}
 
 // second
 var rollupTime time.Duration = 1 * 60 * 60
@@ -99,20 +99,18 @@ func generateAccount() {
 	handleAccount(privateKey, address)
 }
 
-func checkAddress(address string) bool {
-	rwLocker.RLock()
-	_, ok := data[address]
-	rwLocker.RUnlock()
-	if ok {
-		return true
-	}
-	return false
-}
-
 func handleAccount(privateKey string, address string) {
 	if checkAddress(address) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
 		tool.AppendFile(accountsFile, text)
 	}
+}
+
+func checkAddress(address string) bool {
+	ok := strings.Contains(data, address)
+	if ok {
+		return true
+	}
+	return false
 }
