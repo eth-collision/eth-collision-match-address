@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/eth-collision/eth-collision-tool"
+	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 var totalFile = "total.txt"
@@ -19,8 +19,8 @@ var speedFile = "speed.txt"
 var locker = sync.Mutex{}
 
 // second
-var rollupTime time.Duration = 1 * 60 * 60
-var submitTime time.Duration = 1 * 60
+var rollupTime time.Duration = 1 * 10
+var submitTime time.Duration = 1
 
 func main() {
 	InitData()
@@ -53,7 +53,7 @@ func main() {
 				"Addrs: %d\n",
 				len(data), total, speed, addresses)
 			appendFile(speedFile, text)
-			sendMsgText(text)
+			tool.SendMsgText(text)
 			InitData()
 		case count := <-msg:
 			total = bigIntAddMutex(total, count)

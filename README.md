@@ -5,6 +5,5 @@ It's a high-performance program that generates an Ethereum private key and check
 ## Usage
 
 ```
-cp config.go.example config.go
 go run main.go
 ```
