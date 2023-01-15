@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
-	"strings"
 	"sync"
 	"time"
 )
@@ -17,10 +16,11 @@ var accountsFile = "accounts.txt"
 var speedFile = "speed.txt"
 
 var locker = sync.Mutex{}
+var rwLocker = sync.RWMutex{}
 
 // second
-var rollupTime time.Duration = 1 * 10
-var submitTime time.Duration = 1
+var rollupTime time.Duration = 1 * 60 * 60
+var submitTime time.Duration = 1 * 60
 
 func main() {
 	InitData()
@@ -45,13 +45,17 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
+			dataStr := tool.FormatInt(int64(len(data)))
+			totalStr := tool.FormatBigInt(*total)
+			speedStr := tool.FormatBigInt(*speed)
+			addressesStr := tool.FormatInt(int64(addresses))
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
-				"Data : %d\n"+
-				"Total: %d\n"+
-				"Speed: %d\n"+
-				"Addrs: %d\n",
-				len(data), total, speed, addresses)
+				"Data : %s\n"+
+				"Total: %s\n"+
+				"Speed: %s\n"+
+				"Addrs: %s\n",
+				dataStr, totalStr, speedStr, addressesStr)
 			appendFile(speedFile, text)
 			tool.SendMsgText(text)
 			InitData()
@@ -96,12 +100,9 @@ func generateAccount() {
 }
 
 func checkAddress(address string) bool {
+	rwLocker.RLock()
 	_, ok := data[address]
-	if ok {
-		return true
-	}
-	address = strings.ToLower(address)
-	_, ok = data[address]
+	rwLocker.RUnlock()
 	if ok {
 		return true
 	}
