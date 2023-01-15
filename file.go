@@ -52,7 +52,7 @@ func fileCountLine(filename string) (int, error) {
 		case err == io.EOF:
 			return count, nil
 		case err != nil:
-			return -1, err
+			return 0, err
 		}
 	}
 }

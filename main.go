@@ -23,6 +23,7 @@ var rollupTime time.Duration = 1 * 60 * 60
 var submitTime time.Duration = 1 * 60
 
 func main() {
+	InitData()
 	msg := make(chan *big.Int)
 	for i := 0; i < 20; i++ {
 		go generateAccountJob(msg)
@@ -53,6 +54,7 @@ func main() {
 				len(data), total, speed, addresses)
 			appendFile(speedFile, text)
 			sendMsgText(text)
+			InitData()
 		case count := <-msg:
 			total = bigIntAddMutex(total, count)
 			writeFile(totalFile, total.String())
