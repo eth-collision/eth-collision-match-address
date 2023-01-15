@@ -1,0 +1,1 @@
+../go/bin/go build .
