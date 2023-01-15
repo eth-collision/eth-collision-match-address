@@ -3,7 +3,7 @@ module eth-collision
 go 1.17
 
 require (
-	github.com/eth-collision/eth-collision-tool v0.0.0-20230115071823-46803be701b2
+	github.com/eth-collision/eth-collision-tool v0.0.0-20230115135440-604e2f6581d6
 	github.com/ethereum/go-ethereum v1.10.26
 )
 

@@ -2,3 +2,4 @@
 config.go
 *.txt
 *.yaml
+eth-collision

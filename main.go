@@ -28,7 +28,7 @@ func main() {
 	for i := 0; i < 20; i++ {
 		go generateAccountJob(msg)
 	}
-	totalStr := readFile(totalFile)
+	totalStr := tool.ReadFile(totalFile)
 	n := new(big.Int)
 	total, ok := n.SetString(totalStr, 10)
 	if !ok {
@@ -41,7 +41,7 @@ func main() {
 		case <-tick:
 			speed := new(big.Int).Sub(total, lastTotal)
 			lastTotal = total
-			addresses, err := fileCountLine(accountsFile)
+			addresses, err := tool.FileCountLine(accountsFile)
 			if err != nil {
 				log.Println(err)
 			}
@@ -56,12 +56,12 @@ func main() {
 				"Speed: %s\n"+
 				"Addrs: %s\n",
 				dataStr, totalStr, speedStr, addressesStr)
-			appendFile(speedFile, text)
+			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
 			InitData()
 		case count := <-msg:
 			total = bigIntAddMutex(total, count)
-			writeFile(totalFile, total.String())
+			tool.WriteFile(totalFile, total.String())
 		}
 	}
 }
@@ -113,6 +113,6 @@ func handleAccount(privateKey string, address string) {
 	if checkAddress(address) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
-		appendFile(accountsFile, text)
+		tool.AppendFile(accountsFile, text)
 	}
 }
