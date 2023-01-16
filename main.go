@@ -26,8 +26,6 @@ var datas [20]map[string]string
 func main() {
 	msg := make(chan *big.Int)
 	for i := 0; i < 20; i++ {
-		m := CopyMap(data)
-		datas[i] = m
 		go generateAccountJob(msg, i)
 	}
 	totalStr := tool.ReadFile(totalFile)
@@ -47,7 +45,7 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			dataStr := tool.FormatInt(int64(len(data)))
+			dataStr := tool.FormatInt(int64(bloomFilter.Cap()))
 			totalStr := tool.FormatBigInt(*total)
 			speedStr := tool.FormatBigInt(*speed)
 			addressesStr := tool.FormatInt(int64(addresses))
@@ -109,7 +107,8 @@ func handleAccount(privateKey string, address string, dataId int) {
 }
 
 func checkAddress(address string, dataId int) bool {
-	_, ok := datas[dataId][address]
+	address = address[2:]
+	ok := CheckData(address)
 	if ok {
 		return true
 	}

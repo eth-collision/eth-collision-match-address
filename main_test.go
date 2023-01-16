@@ -28,8 +28,7 @@ func Test_checkAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			InitData()
-			got := checkAddress(tt.args.address)
+			got := checkAddress(tt.args.address, 0)
 			if got != tt.want {
 				t.Errorf("checkAddress() = %v, want %v", got, tt.want)
 			}
