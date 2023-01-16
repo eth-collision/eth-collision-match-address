@@ -18,8 +18,8 @@ var speedFile = "speed.txt"
 var locker = sync.Mutex{}
 
 // second
-var rollupTime time.Duration = 1 * 10
-var submitTime time.Duration = 1
+var rollupTime time.Duration = 1 * 60 * 60
+var submitTime time.Duration = 1 * 60
 
 var datas [20]map[string]string
 
