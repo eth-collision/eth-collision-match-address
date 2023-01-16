@@ -7,7 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
-	"strings"
 	"sync"
 	"time"
 )
@@ -19,14 +18,17 @@ var speedFile = "speed.txt"
 var locker = sync.Mutex{}
 
 // second
-var rollupTime time.Duration = 1 * 60 * 60
-var submitTime time.Duration = 1 * 60
+var rollupTime time.Duration = 1 * 10
+var submitTime time.Duration = 1
+
+var datas [20]map[string]string
 
 func main() {
-	InitData()
 	msg := make(chan *big.Int)
 	for i := 0; i < 20; i++ {
-		go generateAccountJob(msg)
+		m := CopyMap(data)
+		datas[i] = m
+		go generateAccountJob(msg, i)
 	}
 	totalStr := tool.ReadFile(totalFile)
 	n := new(big.Int)
@@ -58,7 +60,6 @@ func main() {
 				dataStr, totalStr, speedStr, addressesStr)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
-			InitData()
 		case count := <-msg:
 			total = bigIntAddMutex(total, count)
 			tool.WriteFile(totalFile, total.String())
@@ -74,7 +75,7 @@ func bigIntAddMutex(a, b *big.Int) *big.Int {
 	return c
 }
 
-func generateAccountJob(msg chan *big.Int) {
+func generateAccountJob(msg chan *big.Int, dataId int) {
 	count := big.NewInt(0)
 	tick := time.Tick(submitTime * time.Second)
 	for {
@@ -83,34 +84,42 @@ func generateAccountJob(msg chan *big.Int) {
 			msg <- count
 			count = big.NewInt(0)
 		default:
-			generateAccount()
+			generateAccount(dataId)
 			count = count.Add(count, big.NewInt(1))
 		}
 	}
 }
 
-func generateAccount() {
+func generateAccount(dataId int) {
 	key, err := crypto.GenerateKey()
 	if err != nil {
 		log.Println(err)
 	}
 	privateKey := hex.EncodeToString(key.D.Bytes())
 	address := crypto.PubkeyToAddress(key.PublicKey).Hex()
-	handleAccount(privateKey, address)
+	handleAccount(privateKey, address, dataId)
 }
 
-func handleAccount(privateKey string, address string) {
-	if checkAddress(address) {
+func handleAccount(privateKey string, address string, dataId int) {
+	if checkAddress(address, dataId) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
 		tool.AppendFile(accountsFile, text)
 	}
 }
 
-func checkAddress(address string) bool {
-	ok := strings.Contains(data, address)
+func checkAddress(address string, dataId int) bool {
+	_, ok := datas[dataId][address]
 	if ok {
 		return true
 	}
 	return false
+}
+
+func CopyMap(m map[string]string) map[string]string {
+	n := map[string]string{}
+	for k, v := range m {
+		n[k] = v
+	}
+	return n
 }
