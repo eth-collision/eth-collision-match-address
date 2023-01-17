@@ -33,10 +33,11 @@ func main() {
 		total = big.NewInt(0)
 	}
 	lastTotal := total
-	tick := time.Tick(rollupTime * time.Second)
+	ticker, callback := tool.NewProxyTicker(rollupTime * time.Second)
+	go callback()
 	for {
 		select {
-		case <-tick:
+		case <-ticker:
 			speed := new(big.Int).Sub(total, lastTotal)
 			lastTotal = total
 			addresses, err := tool.FileCountLine(accountsFile)
@@ -48,13 +49,14 @@ func main() {
 			speedStr := tool.FormatBigInt(*speed)
 			addressesStr := tool.FormatInt(int64(addresses))
 			ipStr := tool.GetOutboundIP().String()
+			fmt.Println(ipStr)
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
 				"Data : %s\n"+
 				"Total: %s\n"+
 				"Speed: %s\n"+
 				"Addrs: %s\n"+
-				"IP   : %s\n"+
+				"IP   : %s\n",
 				dataStr, totalStr, speedStr, addressesStr, ipStr)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
