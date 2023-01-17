@@ -7,45 +7,33 @@ import (
 	"os"
 )
 
-var fileList = []string{
-	"../eth-address-all/data0.txt",
-	"../eth-address-all/data1.txt",
-	"../eth-address-all/data2.txt",
-	"../eth-address-all/data3.txt",
-	"../eth-address-all/data4.txt",
-	"../eth-address-all/data5.txt",
-	"../eth-address-all/data6.txt",
-	"../eth-address-all/data7.txt",
-	"../eth-address-all/data8.txt",
-	"../eth-address-all/data9.txt",
-	"../eth-address-all/dataa.txt",
-	"../eth-address-all/datab.txt",
-	"../eth-address-all/datac.txt",
-	"../eth-address-all/datad.txt",
-	"../eth-address-all/datae.txt",
-	"../eth-address-all/dataf.txt",
-}
-
 var bloomFilter = bloom.NewWithEstimates(200000000, 0.000000001)
+var modelFile = "../eth-address-all/model.bin"
 
 func init() {
-	filename := "../eth-address-all/model.bin"
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer file.Close()
-	_, err = bloomFilter.ReadFrom(file)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Println("load model success", bloomFilter.Cap())
+	LoadFromModelFile()
 }
 
-func ReadFromFile() {
-	for _, filename := range fileList {
+func LoadFromSourceFile() {
+	var sourceFileList = []string{
+		"../eth-address-all/data0.txt",
+		"../eth-address-all/data1.txt",
+		"../eth-address-all/data2.txt",
+		"../eth-address-all/data3.txt",
+		"../eth-address-all/data4.txt",
+		"../eth-address-all/data5.txt",
+		"../eth-address-all/data6.txt",
+		"../eth-address-all/data7.txt",
+		"../eth-address-all/data8.txt",
+		"../eth-address-all/data9.txt",
+		"../eth-address-all/dataa.txt",
+		"../eth-address-all/datab.txt",
+		"../eth-address-all/datac.txt",
+		"../eth-address-all/datad.txt",
+		"../eth-address-all/datae.txt",
+		"../eth-address-all/dataf.txt",
+	}
+	for _, filename := range sourceFileList {
 		log.Println("load file:", filename)
 		file, err := os.Open(filename)
 		if err != nil {
@@ -67,9 +55,9 @@ func CheckData(key string) bool {
 	return bloomFilter.TestString(key)
 }
 
-func WriteTo() {
-	filename := "../eth-address-all/model.bin"
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
+func GenerateModelFIle() {
+	LoadFromSourceFile()
+	file, err := os.OpenFile(modelFile, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Println(err)
 		return
@@ -79,14 +67,20 @@ func WriteTo() {
 		log.Println(err)
 		return
 	}
-	log.Println(to)
+	log.Println("generate model success", to)
 }
 
-func ReadFrom() {
-
-}
-
-func Rate() {
-	rate := bloom.EstimateFalsePositiveRate(1000000000, 128, 200000000)
-	log.Println(rate)
+func LoadFromModelFile() {
+	file, err := os.Open(modelFile)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer file.Close()
+	_, err = bloomFilter.ReadFrom(file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("load model success", bloomFilter.Cap())
 }

@@ -21,12 +21,10 @@ var locker = sync.Mutex{}
 var rollupTime time.Duration = 1 * 60 * 60
 var submitTime time.Duration = 1 * 60
 
-var datas [20]map[string]string
-
 func main() {
 	msg := make(chan *big.Int)
 	for i := 0; i < 20; i++ {
-		go generateAccountJob(msg, i)
+		go generateAccountJob(msg)
 	}
 	totalStr := tool.ReadFile(totalFile)
 	n := new(big.Int)
@@ -73,7 +71,7 @@ func bigIntAddMutex(a, b *big.Int) *big.Int {
 	return c
 }
 
-func generateAccountJob(msg chan *big.Int, dataId int) {
+func generateAccountJob(msg chan *big.Int) {
 	count := big.NewInt(0)
 	tick := time.Tick(submitTime * time.Second)
 	for {
@@ -82,43 +80,35 @@ func generateAccountJob(msg chan *big.Int, dataId int) {
 			msg <- count
 			count = big.NewInt(0)
 		default:
-			generateAccount(dataId)
+			generateAccount()
 			count = count.Add(count, big.NewInt(1))
 		}
 	}
 }
 
-func generateAccount(dataId int) {
+func generateAccount() {
 	key, err := crypto.GenerateKey()
 	if err != nil {
 		log.Println(err)
 	}
 	privateKey := hex.EncodeToString(key.D.Bytes())
 	address := crypto.PubkeyToAddress(key.PublicKey).Hex()
-	handleAccount(privateKey, address, dataId)
+	handleAccount(privateKey, address)
 }
 
-func handleAccount(privateKey string, address string, dataId int) {
-	if checkAddress(address, dataId) {
+func handleAccount(privateKey string, address string) {
+	if checkAddress(address) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
 		tool.AppendFile(accountsFile, text)
 	}
 }
 
-func checkAddress(address string, dataId int) bool {
+func checkAddress(address string) bool {
 	address = address[2:]
 	ok := CheckData(address)
 	if ok {
 		return true
 	}
 	return false
-}
-
-func CopyMap(m map[string]string) map[string]string {
-	n := map[string]string{}
-	for k, v := range m {
-		n[k] = v
-	}
-	return n
 }
