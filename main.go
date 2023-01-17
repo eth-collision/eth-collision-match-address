@@ -52,11 +52,11 @@ func main() {
 			fmt.Println(ipStr)
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
-				"Data : %s\n"+
+				"Data: %s\n"+
 				"Total: %s\n"+
 				"Speed: %s\n"+
 				"Addrs: %s\n"+
-				"IP   : %s\n",
+				"IP: %s\n",
 				dataStr, totalStr, speedStr, addressesStr, ipStr)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
