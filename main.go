@@ -47,7 +47,7 @@ func main() {
 			totalStr := tool.FormatBigInt(*total)
 			speedStr := tool.FormatBigInt(*speed)
 			addressesStr := tool.FormatInt(int64(addresses))
-			ipStr := tool.GetOutboundIP()
+			ipStr := tool.GetOutboundIP().String()
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
 				"Data : %s\n"+
