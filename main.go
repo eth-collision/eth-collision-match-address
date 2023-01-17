@@ -23,7 +23,7 @@ var submitTime time.Duration = 1 * 60
 
 func main() {
 	msg := make(chan *big.Int)
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 100; i++ {
 		go generateAccountJob(msg)
 	}
 	totalStr := tool.ReadFile(totalFile)
