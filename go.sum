@@ -22,8 +22,12 @@ github.com/eth-collision/eth-collision-tool v0.0.0-20230115135301-a4bf9ef449e3 h
 github.com/eth-collision/eth-collision-tool v0.0.0-20230115135301-a4bf9ef449e3/go.mod h1:TbtKO8mGxiKgm8CJN5ZV0B5J/DW6o79LHrWKRCrr3Yw=
 github.com/eth-collision/eth-collision-tool v0.0.0-20230115135440-604e2f6581d6 h1:Zs0uPt7otmyZRr3jhRqpdV39cLtD+wm3tzOC7WEcKqM=
 github.com/eth-collision/eth-collision-tool v0.0.0-20230115135440-604e2f6581d6/go.mod h1:TbtKO8mGxiKgm8CJN5ZV0B5J/DW6o79LHrWKRCrr3Yw=
+github.com/eth-collision/eth-collision-tool v0.0.0-20230117083530-6427df7afb4e h1:Hnr2Qz1HaRN52GLf3anKbiZt9q9ps2CUKKJ+mLanKYo=
+github.com/eth-collision/eth-collision-tool v0.0.0-20230117083530-6427df7afb4e/go.mod h1:kX8yD+2wspqr7ysag2Dt4lIvEATzLiSKHsQ6Q17Is9M=
 github.com/ethereum/go-ethereum v1.10.26 h1:i/7d9RBBwiXCEuyduBQzJw/mKmnvzsN14jqBmytw72s=
 github.com/ethereum/go-ethereum v1.10.26/go.mod h1:EYFyF19u3ezGLD4RqOkLq+ZCXzYbLoNDdZlMt7kyKFg=
+github.com/glendc/go-external-ip v0.1.0 h1:iX3xQ2Q26atAmLTbd++nUce2P5ht5P4uD4V7caSY/xg=
+github.com/glendc/go-external-ip v0.1.0/go.mod h1:CNx312s2FLAJoWNdJWZ2Fpf5O4oLsMFwuYviHjS4uJE=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 h1:wG8n/XJQ07TmjbITcGiUaOtXxdrINDz1b0J1w0SzqDc=
 github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
 github.com/twmb/murmur3 v1.1.6/go.mod h1:Qq/R7NUyOfr65zD+6Q5IHKsJLwP7exErjN6lyyq3OSQ=

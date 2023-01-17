@@ -47,13 +47,15 @@ func main() {
 			totalStr := tool.FormatBigInt(*total)
 			speedStr := tool.FormatBigInt(*speed)
 			addressesStr := tool.FormatInt(int64(addresses))
+			ipStr := tool.GetOutboundIP()
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
 				"Data : %s\n"+
 				"Total: %s\n"+
 				"Speed: %s\n"+
-				"Addrs: %s\n",
-				dataStr, totalStr, speedStr, addressesStr)
+				"Addrs: %s\n"+
+				"IP   : %s\n"+
+				dataStr, totalStr, speedStr, addressesStr, ipStr)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
 		case count := <-msg:
