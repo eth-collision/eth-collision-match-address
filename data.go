@@ -32,6 +32,7 @@ func LoadFromSourceFile() {
 		"../eth-address-all/datad.txt",
 		"../eth-address-all/datae.txt",
 		"../eth-address-all/dataf.txt",
+		"../eth-address-top-list/address.txt",
 	}
 	for _, filename := range sourceFileList {
 		log.Println("load file:", filename)

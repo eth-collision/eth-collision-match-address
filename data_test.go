@@ -37,7 +37,7 @@ func TestCheckData(t *testing.T) {
 	}
 }
 
-func TestWriteTo(t *testing.T) {
+func TestGenerateModelFIle(t *testing.T) {
 	tests := []struct {
 		name string
 	}{
@@ -52,7 +52,7 @@ func TestWriteTo(t *testing.T) {
 	}
 }
 
-func TestReadFrom(t *testing.T) {
+func TestLoadFromModelFile(t *testing.T) {
 	tests := []struct {
 		name string
 	}{
