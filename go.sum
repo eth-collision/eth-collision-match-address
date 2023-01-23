@@ -28,6 +28,8 @@ github.com/eth-collision/eth-collision-tool v0.0.0-20230117094229-2c9935966d73 h
 github.com/eth-collision/eth-collision-tool v0.0.0-20230117094229-2c9935966d73/go.mod h1:kX8yD+2wspqr7ysag2Dt4lIvEATzLiSKHsQ6Q17Is9M=
 github.com/eth-collision/eth-collision-tool v0.0.0-20230117100040-d3f8ef2c2642 h1:nYm7WfV78uUOTQOWpI1/ncqtMX+qFKkknDkfk24Lcxo=
 github.com/eth-collision/eth-collision-tool v0.0.0-20230117100040-d3f8ef2c2642/go.mod h1:kX8yD+2wspqr7ysag2Dt4lIvEATzLiSKHsQ6Q17Is9M=
+github.com/eth-collision/eth-collision-tool v0.0.0-20230123091736-3c2e0ebeda90 h1:H2sVUOLo6ulxcRcJwoJDzZ7BBVe+NVxPOrFpkjWHVos=
+github.com/eth-collision/eth-collision-tool v0.0.0-20230123091736-3c2e0ebeda90/go.mod h1:kX8yD+2wspqr7ysag2Dt4lIvEATzLiSKHsQ6Q17Is9M=
 github.com/ethereum/go-ethereum v1.10.26 h1:i/7d9RBBwiXCEuyduBQzJw/mKmnvzsN14jqBmytw72s=
 github.com/ethereum/go-ethereum v1.10.26/go.mod h1:EYFyF19u3ezGLD4RqOkLq+ZCXzYbLoNDdZlMt7kyKFg=
 github.com/glendc/go-external-ip v0.1.0 h1:iX3xQ2Q26atAmLTbd++nUce2P5ht5P4uD4V7caSY/xg=
