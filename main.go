@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/eth-collision/eth-collision-tool"
 	"github.com/ethereum/go-ethereum/crypto"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"regexp"
@@ -28,9 +29,12 @@ func main() {
 	for i := 0; i < 100; i++ {
 		go generateAccountJob(msg)
 	}
-	totalStr := tool.ReadFile(totalFile)
+	totalBytes, err := ioutil.ReadFile(totalFile)
+	if err != nil {
+		log.Println(err)
+	}
 	n := new(big.Int)
-	total, ok := n.SetString(totalStr, 10)
+	total, ok := n.SetString(string(totalBytes), 10)
 	if !ok {
 		total = big.NewInt(0)
 	}
