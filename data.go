@@ -52,7 +52,7 @@ func LoadFromSourceFile() {
 	}
 }
 
-func CheckData(key string) bool {
+func CheckDataInBloom(key string) bool {
 	return bloomFilter.TestString(key)
 }
 

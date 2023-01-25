@@ -7,12 +7,14 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
+	"regexp"
 	"sync"
 	"time"
 )
 
 var totalFile = "total.txt"
-var accountsFile = "accounts.txt"
+var matchFile = "match.txt"
+var findFile = "find.txt"
 var speedFile = "speed.txt"
 
 var locker = sync.Mutex{}
@@ -40,24 +42,30 @@ func main() {
 		case <-ticker:
 			speed := new(big.Int).Sub(total, lastTotal)
 			lastTotal = total
-			addresses, err := tool.FileCountLine(accountsFile)
+			matchAddrs, err := tool.FileCountLine(matchFile)
+			if err != nil {
+				log.Println(err)
+			}
+			findAddrs, err := tool.FileCountLine(findFile)
 			if err != nil {
 				log.Println(err)
 			}
 			dataStr := tool.FormatInt(int64(bloomFilter.Cap()))
 			totalStr := tool.FormatBigInt(*total)
 			speedStr := tool.FormatBigInt(*speed)
-			addressesStr := tool.FormatInt(int64(addresses))
+			matchAddrsStr := tool.FormatInt(int64(matchAddrs))
+			findAddrsStr := tool.FormatInt(int64(findAddrs))
 			ipStr := tool.GetOutboundIP().String()
-			fmt.Println(ipStr)
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
 				"Data: %s\n"+
 				"Total: %s\n"+
 				"Speed: %s\n"+
-				"Addrs: %s\n"+
+				"Matchs: %s\n"+
+				"Finds: %s\n"+
 				"IP: %s\n",
-				dataStr, totalStr, speedStr, addressesStr, ipStr)
+				dataStr, totalStr, speedStr, matchAddrsStr, findAddrsStr, ipStr)
+			log.Println(text)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
 		case count := <-msg:
@@ -101,18 +109,33 @@ func generateAccount() {
 }
 
 func handleAccount(privateKey string, address string) {
-	if checkAddress(address) {
+	if checkAddressInBloom(address) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
-		tool.AppendFile(accountsFile, text)
+		tool.AppendFile(matchFile, text)
+		tool.SendMsgText(text)
+	}
+	if checkAddressInRules(address) {
+		log.Println("Found: ", privateKey, address)
+		text := fmt.Sprintf("%s,%s\n", privateKey, address)
+		tool.AppendFile(findFile, text)
 		tool.SendMsgText(text)
 	}
 }
 
-func checkAddress(address string) bool {
+func checkAddressInBloom(address string) bool {
 	address = address[2:]
-	ok := CheckData(address)
+	ok := CheckDataInBloom(address)
 	if ok {
+		return true
+	}
+	return false
+}
+
+var re = regexp.MustCompile(`0x00000000|0x11111111|0x22222222|0x33333333|0x44444444|0x55555555|0x66666666|0x77777777|0x88888888|0x99999999|0xaaaaaaaa|0xbbbbbbbb|0xcccccccc|0xdddddddd|0xeeeeeeee|0xffffffff`)
+
+func checkAddressInRules(address string) bool {
+	if re.MatchString(address) {
 		return true
 	}
 	return false
