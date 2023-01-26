@@ -52,7 +52,7 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			dataStr := tool.FormatInt(int64(bloomFilter.Cap()))
+			dataStr := tool.FormatInt(int64(GetBloomLength()))
 			totalStr := tool.FormatBigInt(*total)
 			speedStr := tool.FormatBigInt(*speed)
 			matchAddrsStr := tool.FormatInt(int64(matchAddrs))
@@ -60,7 +60,7 @@ func main() {
 			ipStr := tool.GetOutboundIP().String()
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
-				"Data: %s\n"+
+				"Targetg: %s\n"+
 				"Total: %s\n"+
 				"Speed: %s\n"+
 				"Matchs: %s\n"+

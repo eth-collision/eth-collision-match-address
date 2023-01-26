@@ -85,3 +85,7 @@ func LoadFromModelFile() {
 	}
 	log.Println("load model success", bloomFilter.Cap())
 }
+
+func GetBloomLength() uint {
+	return bloomFilter.BitSet().Len()
+}
