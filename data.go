@@ -87,5 +87,5 @@ func LoadFromModelFile() {
 }
 
 func GetBloomLength() uint {
-	return bloomFilter.BitSet().Len()
+	return bloomFilter.BitSet().Count()
 }

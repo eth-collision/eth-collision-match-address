@@ -60,7 +60,7 @@ func main() {
 			ipStr := tool.GetOutboundIP().String()
 			text := fmt.Sprintf(""+
 				"[ETH Collision Match Address]\n"+
-				"Targetg: %s\n"+
+				"Target: %s\n"+
 				"Total: %s\n"+
 				"Speed: %s\n"+
 				"Matchs: %s\n"+
