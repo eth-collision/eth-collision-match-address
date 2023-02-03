@@ -134,7 +134,7 @@ func checkAddressInBloom(address string) bool {
 	return false
 }
 
-var re = regexp.MustCompile(`0x00000000|0x11111111|0x22222222|0x33333333|0x44444444|0x55555555|0x66666666|0x77777777|0x88888888|0x99999999|0xaaaaaaaa|0xbbbbbbbb|0xcccccccc|0xdddddddd|0xeeeeeeee|0xffffffff`)
+var re = regexp.MustCompile(`0x000000000`)
 
 func checkAddressInRules(address string) bool {
 	if re.MatchString(address) {

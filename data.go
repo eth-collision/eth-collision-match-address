@@ -52,6 +52,31 @@ func LoadFromSourceFile() {
 	}
 }
 
+func VerifyFromFile() {
+	var sourceFileList = []string{
+		"./no-random.txt",
+	}
+	for _, filename := range sourceFileList {
+		log.Println("load file:", filename)
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			address := scanner.Text()[2:]
+			if CheckDataInBloom(address) {
+				log.Println("verify success", address)
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			log.Println(err)
+		}
+	}
+}
+
 func CheckDataInBloom(key string) bool {
 	return bloomFilter.TestString(key)
 }
@@ -83,7 +108,7 @@ func LoadFromModelFile() {
 		log.Println(err)
 		return
 	}
-	log.Println("load model success", bloomFilter.Cap())
+	log.Println("load model success", GetBloomLength())
 }
 
 func GetBloomLength() uint {
