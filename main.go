@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -24,7 +23,7 @@ var locker = sync.Mutex{}
 // second
 const rollupTime time.Duration = 1 * 60 * 60
 const submitTime time.Duration = 1 * 60
-const goroutineNum = 64
+const goroutineNum = 128
 
 func main() {
 	msg := make(chan *big.Int)
@@ -33,8 +32,7 @@ func main() {
 	}
 	totalStr := tool.ReadFile(totalFile)
 	totalStr = strings.TrimSpace(totalStr)
-	n := new(big.Int)
-	total, ok := n.SetString(totalStr, 10)
+	total, ok := new(big.Int).SetString(totalStr, 10)
 	if !ok {
 		total = big.NewInt(-1)
 	}
@@ -54,21 +52,7 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			dataStr := tool.FormatInt(int64(GetBloomLength()))
-			totalStr := tool.FormatBigInt(*total)
-			speedStr := tool.FormatBigInt(*speed)
-			matchAddrsStr := tool.FormatInt(int64(matchAddrs))
-			findAddrsStr := tool.FormatInt(int64(findAddrs))
-			ipStr := tool.GetOutboundIP().String()
-			text := fmt.Sprintf(""+
-				"[ETH Collision Match Address]\n"+
-				"Target: %s\n"+
-				"Total: %s\n"+
-				"Speed: %s\n"+
-				"Matchs: %s\n"+
-				"Finds: %s\n"+
-				"IP: %s\n",
-				dataStr, totalStr, speedStr, matchAddrsStr, findAddrsStr, ipStr)
+			text := getNotifyText(total, speed, matchAddrs, findAddrs)
 			log.Println(text)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
@@ -77,6 +61,25 @@ func main() {
 			tool.WriteFile(totalFile, total.String())
 		}
 	}
+}
+
+func getNotifyText(total *big.Int, speed *big.Int, matchAddrs int, findAddrs int) string {
+	dataStr := tool.FormatInt(int64(GetBloomLength()))
+	totalStr := tool.FormatBigInt(*total)
+	speedStr := tool.FormatBigInt(*speed)
+	matchAddrsStr := tool.FormatInt(int64(matchAddrs))
+	findAddrsStr := tool.FormatInt(int64(findAddrs))
+	ipStr := tool.GetOutboundIP().String()
+	text := fmt.Sprintf(""+
+		"[ETH Collision Match Address]\n"+
+		"Target: %s\n"+
+		"Total: %s\n"+
+		"Speed: %s\n"+
+		"Matchs: %s\n"+
+		"Finds: %s\n"+
+		"IP: %s\n",
+		dataStr, totalStr, speedStr, matchAddrsStr, findAddrsStr, ipStr)
+	return text
 }
 
 func bigIntAddMutex(a, b *big.Int) *big.Int {
@@ -140,10 +143,8 @@ func checkAddressInBloom(address string) bool {
 	return false
 }
 
-var re = regexp.MustCompile(`0x000000000`)
-
 func checkAddressInRules(address string) bool {
-	if re.MatchString(address) {
+	if strings.HasPrefix(address, "0x000000000") || strings.HasPrefix(address, "000000000") {
 		return true
 	}
 	return false
