@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/ecdsa"
 	"encoding/hex"
 	"fmt"
 	"github.com/eth-collision/eth-collision-tool"
@@ -21,12 +22,13 @@ var speedFile = "speed.txt"
 var locker = sync.Mutex{}
 
 // second
-var rollupTime time.Duration = 1 * 60 * 60
-var submitTime time.Duration = 1 * 60
+const rollupTime time.Duration = 1 * 60 * 60
+const submitTime time.Duration = 1 * 60
+const goroutineNum = 64
 
 func main() {
 	msg := make(chan *big.Int)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < goroutineNum; i++ {
 		go generateAccountJob(msg)
 	}
 	totalStr := tool.ReadFile(totalFile)
@@ -86,16 +88,16 @@ func bigIntAddMutex(a, b *big.Int) *big.Int {
 }
 
 func generateAccountJob(msg chan *big.Int) {
-	count := big.NewInt(0)
+	var count int64 = 0
 	tick := time.Tick(submitTime * time.Second)
 	for {
 		select {
 		case <-tick:
-			msg <- count
-			count = big.NewInt(0)
+			msg <- big.NewInt(count)
+			count = 0
 		default:
 			generateAccount()
-			count = count.Add(count, big.NewInt(1))
+			count++
 		}
 	}
 }
@@ -105,24 +107,28 @@ func generateAccount() {
 	if err != nil {
 		log.Println(err)
 	}
-	privateKey := hex.EncodeToString(key.D.Bytes())
 	address := crypto.PubkeyToAddress(key.PublicKey).Hex()
-	handleAccount(privateKey, address)
+	checkAccount(key, address)
 }
 
-func handleAccount(privateKey string, address string) {
+func checkAccount(key *ecdsa.PrivateKey, address string) {
 	if checkAddressInBloom(address) {
-		log.Println("Found: ", privateKey, address)
-		text := fmt.Sprintf("%s,%s\n", privateKey, address)
-		tool.AppendFile(matchFile, text)
-		tool.SendMsgText(text)
+		handleFoundAddress(key, address, matchFile)
 	}
 	if checkAddressInRules(address) {
-		log.Println("Found: ", privateKey, address)
-		text := fmt.Sprintf("%s,%s\n", privateKey, address)
-		tool.AppendFile(findFile, text)
-		tool.SendMsgText(text)
+		handleFoundAddress(key, address, findFile)
 	}
+}
+
+func handleFoundAddress(key *ecdsa.PrivateKey, address string, filename string) {
+	privateKey := hex.EncodeToString(key.D.Bytes())
+	// print to output
+	log.Println("Found: ", privateKey, address)
+	// write to file
+	text := fmt.Sprintf("%s,%s\n", privateKey, address)
+	tool.AppendFile(filename, text)
+	// send to telegram
+	tool.SendMsgText(text)
 }
 
 func checkAddressInBloom(address string) bool {
