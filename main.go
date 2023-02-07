@@ -23,7 +23,7 @@ var locker = sync.Mutex{}
 // second
 const rollupTime time.Duration = 1 * 60 * 60
 const submitTime time.Duration = 1 * 60
-const goroutineNum = 128
+const goroutineNum = 32
 
 func main() {
 	msg := make(chan *big.Int)
@@ -116,7 +116,9 @@ func generateAccount() {
 
 func checkAccount(key *ecdsa.PrivateKey, address string) {
 	if checkAddressInBloom(address) {
-		handleFoundAddress(key, address, matchFile)
+		if checkBalanceInEthScan(address) {
+			handleFoundAddress(key, address, matchFile)
+		}
 	}
 	if checkAddressInRules(address) {
 		handleFoundAddress(key, address, findFile)
@@ -124,6 +126,10 @@ func checkAccount(key *ecdsa.PrivateKey, address string) {
 }
 
 func handleFoundAddress(key *ecdsa.PrivateKey, address string, filename string) {
+	if key == nil {
+		log.Println("key is nil")
+		return
+	}
 	privateKey := hex.EncodeToString(key.D.Bytes())
 	// print to output
 	log.Println("Found: ", privateKey, address)
@@ -138,6 +144,14 @@ func checkAddressInBloom(address string) bool {
 	address = address[2:]
 	ok := CheckDataInBloom(address)
 	if ok {
+		return true
+	}
+	return false
+}
+
+func checkBalanceInEthScan(address string) bool {
+	balance := tool.GetBalanceFromEthScan(address)
+	if balance.Cmp(big.NewInt(0)) > 0 {
 		return true
 	}
 	return false

@@ -7,7 +7,10 @@ import (
 	"os"
 )
 
-var bloomFilter = bloom.NewWithEstimates(10000000000, 0.0000000000000001)
+const n = 6000000000
+const fp = 0.1
+
+var bloomFilter = bloom.NewWithEstimates(n, fp)
 var modelFile = "../eth-address-all/model.bin"
 
 func init() {
@@ -76,7 +79,9 @@ func LoadFromSourceFile() {
 		defer file.Close()
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			bloomFilter.AddString(scanner.Text())
+			if !CheckDataInBloom(scanner.Text()) {
+				bloomFilter.AddString(scanner.Text())
+			}
 		}
 		if err := scanner.Err(); err != nil {
 			log.Println(err)
@@ -134,7 +139,12 @@ func LoadFromModelFile() {
 		log.Println(err)
 		return
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(file)
 	_, err = bloomFilter.ReadFrom(file)
 	if err != nil {
 		log.Println(err)
@@ -145,4 +155,10 @@ func LoadFromModelFile() {
 
 func GetBloomLength() uint {
 	return bloomFilter.BitSet().Count()
+}
+
+func RealPositiveRate() float64 {
+	m, k := bloom.EstimateParameters(n, fp)
+	rate := bloom.EstimateFalsePositiveRate(m, k, n)
+	return rate
 }
