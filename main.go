@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
+	"eth-collision/tool"
 	"fmt"
-	"github.com/eth-collision/eth-collision-tool"
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
@@ -150,7 +150,12 @@ func checkAddressInBloom(address string) bool {
 }
 
 func checkBalanceInEthScan(address string) bool {
-	balance := tool.GetBalanceFromEthScan(address)
+	balance, err := tool.GetBalanceFromEthScan(address)
+	log.Println("Get balance from ethscan: ", balance, " err: ", err, " address: ", address, "")
+	if err != nil {
+		// notice err will return true
+		return true
+	}
 	if balance.Cmp(big.NewInt(0)) > 0 {
 		return true
 	}
