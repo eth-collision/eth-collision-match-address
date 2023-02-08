@@ -23,20 +23,15 @@ var locker = sync.Mutex{}
 // second
 const rollupTime time.Duration = 1 * 60 * 60
 const submitTime time.Duration = 1 * 60
-const goroutineNum = 32
+const goroutineNum = 128
 
 func main() {
+	LoadFromModelFile()
 	msg := make(chan *big.Int)
 	for i := 0; i < goroutineNum; i++ {
 		go generateAccountJob(msg)
 	}
-	totalStr := tool.ReadFile(totalFile)
-	totalStr = strings.TrimSpace(totalStr)
-	total, ok := new(big.Int).SetString(totalStr, 10)
-	if !ok {
-		total = big.NewInt(-1)
-	}
-	lastTotal := total
+	total, lastTotal := getInitTotal()
 	ticker, callback := tool.NewProxyTicker(rollupTime * time.Second)
 	go callback()
 	for {
@@ -61,6 +56,17 @@ func main() {
 			tool.WriteFile(totalFile, total.String())
 		}
 	}
+}
+
+func getInitTotal() (*big.Int, *big.Int) {
+	totalStr := tool.ReadFile(totalFile)
+	totalStr = strings.TrimSpace(totalStr)
+	total, ok := new(big.Int).SetString(totalStr, 10)
+	if !ok {
+		total = big.NewInt(-1)
+	}
+	lastTotal := total
+	return total, lastTotal
 }
 
 func getNotifyText(total *big.Int, speed *big.Int, matchAddrs int, findAddrs int) string {
@@ -116,9 +122,12 @@ func generateAccount() {
 
 func checkAccount(key *ecdsa.PrivateKey, address string) {
 	if checkAddressInBloom(address) {
-		if checkBalanceInEthScan(address) {
-			handleFoundAddress(key, address, matchFile)
-		}
+		go func() {
+			check := checkBalanceInEthScan(address)
+			if check {
+				handleFoundAddress(key, address, matchFile)
+			}
+		}()
 	}
 	if checkAddressInRules(address) {
 		handleFoundAddress(key, address, findFile)
@@ -151,7 +160,7 @@ func checkAddressInBloom(address string) bool {
 
 func checkBalanceInEthScan(address string) bool {
 	balance, err := tool.GetBalanceFromEthScan(address)
-	log.Println("Get balance from ethscan: ", balance, " err: ", err, " address: ", address, "")
+	log.Println("Get balance from ethScan: ", balance, " err: ", err, " address: ", address, "")
 	if err != nil {
 		// notice err will return true
 		return true

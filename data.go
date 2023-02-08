@@ -13,10 +13,6 @@ const fp = 0.1
 var bloomFilter = bloom.NewWithEstimates(n, fp)
 var modelFile = "../eth-address-all/model.bin"
 
-func init() {
-	LoadFromModelFile()
-}
-
 func LoadFromSourceFile() {
 	var sourceFileList = []string{
 		"../eth-address-all/180M/data0.txt",
@@ -150,7 +146,7 @@ func LoadFromModelFile() {
 		log.Println(err)
 		return
 	}
-	log.Println("load model success", GetBloomLength())
+	log.Println("Load model success", GetBloomLength(), "/", bloomFilter.Cap())
 }
 
 func GetBloomLength() uint {
