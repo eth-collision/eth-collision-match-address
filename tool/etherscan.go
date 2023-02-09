@@ -56,7 +56,7 @@ func GetBalanceFromEthScan(address string) (*big.Int, error) {
 		return nil, err
 	}
 	if result["status"] != "1" {
-		return nil, err
+		return nil, errors.New("ethscan api error")
 	}
 	balance := result["result"].(string)
 	balanceInt, _ := new(big.Int).SetString(balance, 10)
