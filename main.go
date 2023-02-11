@@ -140,12 +140,9 @@ func handleFoundAddress(key *ecdsa.PrivateKey, address string, filename string) 
 		return
 	}
 	privateKey := hex.EncodeToString(key.D.Bytes())
-	// print to output
 	log.Println("Found: ", privateKey, address)
-	// write to file
 	text := fmt.Sprintf("%s,%s\n", privateKey, address)
 	tool.AppendFile(filename, text)
-	// send to telegram
 	tool.SendMsgText(text)
 }
 

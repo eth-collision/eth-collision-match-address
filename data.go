@@ -5,10 +5,12 @@ import (
 	"github.com/bits-and-blooms/bloom/v3"
 	"log"
 	"os"
+	"strings"
+	"sync"
 )
 
-const n = 6000000000
-const fp = 0.1
+const n = 1000000000
+const fp = 0.00001
 
 var bloomFilter = bloom.NewWithEstimates(n, fp)
 var modelFile = "../eth-address-all/model.bin"
@@ -65,24 +67,31 @@ func LoadFromSourceFile() {
 		"../eth-address-all/89M/dataf.txt",
 		"../eth-address-top-list/address.txt",
 	}
+	group := sync.WaitGroup{}
 	for _, filename := range sourceFileList {
-		log.Println("load file:", filename)
-		file, err := os.Open(filename)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		defer file.Close()
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			if !CheckDataInBloom(scanner.Text()) {
-				bloomFilter.AddString(scanner.Text())
+		go func(filename string) {
+			group.Add(1)
+			log.Println("load file:", filename)
+			file, err := os.Open(filename)
+			if err != nil {
+				log.Println(err)
+				return
 			}
-		}
-		if err := scanner.Err(); err != nil {
-			log.Println(err)
-		}
+			defer file.Close()
+			scanner := bufio.NewScanner(file)
+			for scanner.Scan() {
+				text := scanner.Text()
+				bloomFilter.AddString(text)
+				bloomFilter.AddString(strings.ToUpper(text))
+				bloomFilter.AddString(strings.ToLower(text))
+			}
+			if err := scanner.Err(); err != nil {
+				log.Println(err)
+			}
+			group.Done()
+		}(filename)
 	}
+	group.Wait()
 }
 
 func VerifyFromFile() {
@@ -111,7 +120,10 @@ func VerifyFromFile() {
 }
 
 func CheckDataInBloom(key string) bool {
-	return bloomFilter.TestString(key)
+	a := bloomFilter.TestString(key)
+	b := bloomFilter.TestString(strings.ToUpper(key))
+	c := bloomFilter.TestString(strings.ToLower(key))
+	return a || b || c
 }
 
 func GenerateModelFile() {
