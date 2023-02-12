@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"sync"
 )
 
 const n = 1000000000
@@ -67,10 +66,7 @@ func LoadFromSourceFile() {
 		"../eth-address-all/89M/dataf.txt",
 		"../eth-address-top-list/address.txt",
 	}
-	group := sync.WaitGroup{}
 	for _, filename := range sourceFileList {
-		//go func(filename string) {
-		group.Add(1)
 		log.Println("load file:", filename)
 		file, err := os.Open(filename)
 		if err != nil {
@@ -88,10 +84,7 @@ func LoadFromSourceFile() {
 		if err := scanner.Err(); err != nil {
 			log.Println(err)
 		}
-		group.Done()
-		//}(filename)
 	}
-	group.Wait()
 }
 
 func VerifyFromFile() {
