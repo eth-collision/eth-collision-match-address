@@ -69,27 +69,27 @@ func LoadFromSourceFile() {
 	}
 	group := sync.WaitGroup{}
 	for _, filename := range sourceFileList {
-		go func(filename string) {
-			group.Add(1)
-			log.Println("load file:", filename)
-			file, err := os.Open(filename)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			defer file.Close()
-			scanner := bufio.NewScanner(file)
-			for scanner.Scan() {
-				text := scanner.Text()
-				bloomFilter.AddString(text)
-				bloomFilter.AddString(strings.ToUpper(text))
-				bloomFilter.AddString(strings.ToLower(text))
-			}
-			if err := scanner.Err(); err != nil {
-				log.Println(err)
-			}
-			group.Done()
-		}(filename)
+		//go func(filename string) {
+		group.Add(1)
+		log.Println("load file:", filename)
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			text := scanner.Text()
+			bloomFilter.AddString(text)
+			bloomFilter.AddString(strings.ToUpper(text))
+			bloomFilter.AddString(strings.ToLower(text))
+		}
+		if err := scanner.Err(); err != nil {
+			log.Println(err)
+		}
+		group.Done()
+		//}(filename)
 	}
 	group.Wait()
 }
