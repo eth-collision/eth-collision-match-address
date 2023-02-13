@@ -36,20 +36,20 @@ func main() {
 		case <-ticker:
 			speed := new(big.Int).Sub(total, lastTotal)
 			lastTotal = big.NewInt(0).Set(total)
-			matchAddrs, err := tool.FileCountLine(matchFile)
+			matchAddress, err := tool.FileCountLine(matchFile)
 			if err != nil {
 				log.Println(err)
 			}
-			findAddrs, err := tool.FileCountLine(findFile)
+			findAddress, err := tool.FileCountLine(findFile)
 			if err != nil {
 				log.Println(err)
 			}
-			text := getNotifyText(total, speed, matchAddrs, findAddrs)
+			text := getNotifyText(total, speed, matchAddress, findAddress)
 			log.Println(text)
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
 		case count := <-msg:
-			total = new(big.Int).Add(total, count)
+			total = tool.BigIntAdd(total, count)
 			tool.WriteFile(totalFile, total.String())
 		}
 	}
