@@ -9,7 +9,6 @@ import (
 	"log"
 	"math/big"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -17,8 +16,6 @@ var totalFile = "total.txt"
 var matchFile = "match.txt"
 var findFile = "find.txt"
 var speedFile = "speed.txt"
-
-var locker = sync.Mutex{}
 
 // second
 const rollupTime time.Duration = 1 * 60 * 60
@@ -52,7 +49,7 @@ func main() {
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
 		case count := <-msg:
-			total = bigIntAddMutex(total, count)
+			total = total.Add(total, count)
 			tool.WriteFile(totalFile, total.String())
 		}
 	}
@@ -86,14 +83,6 @@ func getNotifyText(total *big.Int, speed *big.Int, matchAddrs int, findAddrs int
 		"IP: %s\n",
 		dataStr, totalStr, speedStr, matchAddrsStr, findAddrsStr, ipStr)
 	return text
-}
-
-func bigIntAddMutex(a, b *big.Int) *big.Int {
-	locker.Lock()
-	defer locker.Unlock()
-	c := new(big.Int)
-	c.Add(a, b)
-	return c
 }
 
 func generateAccountJob(msg chan *big.Int) {
