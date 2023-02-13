@@ -35,7 +35,7 @@ func main() {
 		select {
 		case <-ticker:
 			speed := new(big.Int).Sub(total, lastTotal)
-			lastTotal = total
+			lastTotal = big.NewInt(0).Set(total)
 			matchAddrs, err := tool.FileCountLine(matchFile)
 			if err != nil {
 				log.Println(err)
@@ -49,7 +49,7 @@ func main() {
 			tool.AppendFile(speedFile, text)
 			tool.SendMsgText(text)
 		case count := <-msg:
-			total = total.Add(total, count)
+			total = new(big.Int).Add(total, count)
 			tool.WriteFile(totalFile, total.String())
 		}
 	}
