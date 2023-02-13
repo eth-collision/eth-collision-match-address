@@ -20,7 +20,7 @@ var speedFile = "speed.txt"
 // second
 const rollupTime time.Duration = 1 * 60 * 60
 const submitTime time.Duration = 1 * 60
-const goroutineNum = 64
+const goroutineNum = 512
 
 func main() {
 	LoadFromModelFile()
