@@ -23,7 +23,7 @@ var locker = sync.Mutex{}
 // second
 const rollupTime time.Duration = 1 * 60 * 60
 const submitTime time.Duration = 1 * 60
-const goroutineNum = 128
+const goroutineNum = 1024
 
 func main() {
 	LoadFromModelFile()
